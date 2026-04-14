@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from . import views
@@ -10,5 +9,7 @@ router.register(r"subcategories", views.SubcategoryViewSet)
 router.register(r"transactions", views.TransactionViewSet)
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('api/', include(router.urls)),
+    path('transactions/', views.TransactionTemplateView.as_view(), name='transactions'),
 ]

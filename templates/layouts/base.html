@@ -1,0 +1,21 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block head_title %}{% endblock head_title %}</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+        {% bootstrap_css %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        {% block extra_css %}{% endblock extra_css %}
+    </head>
+    <body>
+        {% block body %}{% endblock body %}
+        {% bootstrap_javascript %}
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        {% block extra_javascript %}{% endblock extra_javascript %}
+    </body>
+</html>

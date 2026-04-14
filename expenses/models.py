@@ -10,9 +10,10 @@ class Account(models.Model):
         BONUS = "bonus", "Bonus"
 
     name = models.CharField(max_length=50)
-    type = models.CharField(
-        choices = AccountType
-    )
+    type = models.CharField(choices=AccountType)
+
+    def __str__(self):
+        return f"{self.name}"
 
 class Category(models.Model):
     # verbose_name_plural definisce il nome plurale dell'oggetto (di default aggiunge una s e basta alla fine del nome)
@@ -24,9 +25,10 @@ class Category(models.Model):
         INCOME = "income", "Income"
 
     name = models.CharField(max_length=50)
-    type = models.CharField(
-        choices = CategoryType
-    )
+    type = models.CharField(choices=CategoryType)
+
+    def __str__(self):
+        return f"{self.name}"
 
 class Subcategory(models.Model):
     class Meta:
@@ -34,6 +36,9 @@ class Subcategory(models.Model):
 
     name = models.CharField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Transaction(models.Model):
@@ -50,35 +55,22 @@ class Transaction(models.Model):
         MONTHLY = "monthly", "Monthly"
         YEARLY = "yearly", "Yearly"
 
-    type = models.CharField(
-        choices=TransactionType
-    )
+    type = models.CharField(choices=TransactionType)
     date = models.DateField()
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(
         Subcategory, 
         on_delete=models.CASCADE,
-        null = True,
-        blank = True
+        null=True,
+        blank=True
     )
-    amount = models.DecimalField(
-        max_digits = 10,
-        decimal_places = 2
-    )
-    description = models.TextField(
-        null = True,
-        blank = True
-    )
-    frequency = models.CharField(
-        choices = TransactionFrequency,
-        null = True,
-        blank = True
-    )
-    label = models.CharField(
-        max_length=50,
-        null = True,
-        blank = True
-    )
-    created_at = models.DateTimeField(auto_now_add = True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(null=True, blank=True)
+    frequency = models.CharField(choices = TransactionFrequency, default = TransactionFrequency.ONE_TIME)
+    label = models.CharField(max_length=50, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.type} - {self.amount} ({self.date})"
 
