@@ -1,4 +1,6 @@
-//btnSubmit
+let currentOperation = 'create';
+let transaction_in_edit_id = '';
+
 document.addEventListener("DOMContentLoaded", async () => {
     // gestione token csrf
     const csrf_token = document.querySelector("input[name='csrfmiddlewaretoken']").value;
@@ -35,23 +37,52 @@ document.addEventListener("DOMContentLoaded", async () => {
             "label" : label
         }
 
-        axios.post('/api/transactions/', transaction)
+        if(currentOperation == 'create') {
+            axios.post('/api/transactions/', transaction)
             .then(response => {
                 alert("Transaction successfully created.");
-                loadTransactions();
                 resetForm();
+                loadTransactions();
             })
             .catch(error => {
                 alert("Transaction not created.");
-                console.log(error);
+                console.error(error);
             })
-        
+        }else if(currentOperation == 'modify') {
+            axios.put(`/api/transactions/${transaction_in_edit_id}/`, transaction)
+                .then(response => {
+                    alert("Transaction updated successfully.");
+                    resetForm();
+                    loadTransactions();
+                })
+                .catch(error => {
+                    console.error(error);
+                })
+        }
     })
 })
+
+async function loadTransaction(transaction_id) {
+    const response = await axios.get(`/api/transactions/${transaction_id}/`);
+    const transaction = response.data;
+    document.getElementById('selectType').value = transaction.type;
+    document.getElementById('date').value = transaction.date;
+    document.getElementById('selectAccount').value = transaction.account.id;
+    document.getElementById('selectCategory').value = transaction.category.id;
+    document.getElementById('selectSubcategory').value = transaction.subcategory ? transaction.subcategory.id : "";
+    document.getElementById('amount').value = transaction.amount;
+    document.getElementById('description').value = transaction.description;
+    document.getElementById('selectFrequency').value = transaction.frequency;
+    document.getElementById('label').value = transaction.label;
+
+    currentOperation = 'modify';
+}
 
 function resetForm() {
     const form = document.getElementById('formTransactions');
     form.reset();
+    currentOperation = 'create';
+    transaction_in_edit_id = '';
 }
 
 async function loadTransactions() {
@@ -73,13 +104,38 @@ async function loadTransactions() {
             <td>${t.frequency_display}</td>
             <td>${t.label ? t.label : "-"}</td>
             <td>
-                <button class="btn btn-info btnModify" data-id=${t.id}>MODIFY</button>
+                <button class="btn btn-info btnModify" data-transaction-id=${t.id}>MODIFY</button>
             </td>
             <td>
-                <button class="btn btn-danger btnDelete" data-id=${t.id}>DELETE</button>
+                <button class="btn btn-danger btnDelete" data-transaction-id=${t.id}>DELETE</button>
             </td>
         `;
         table.append(tr);
+
+        const btnDelete = tr.querySelector(".btnDelete");
+        btnDelete.addEventListener("click", () => {
+            if(!confirm('Confirm you want to delete this transaction?')) {
+                alert("Operation aborted.")
+                return;
+            }
+
+            const transaction_id = btnDelete.dataset.transactionId;
+            axios.delete(`/api/transactions/${transaction_id}/`)
+                .then(response => {
+                    alert('Transaction deleted successfully.');
+                    loadTransactions();
+                })
+                .catch(error => {
+                    alert("Transaction deletion denied.")
+                    console.log(error);
+                })
+        })
+
+        const btnModify = tr.querySelector(".btnModify");
+        btnModify.addEventListener("click", () => {
+            transaction_in_edit_id = btnModify.dataset.transactionId;
+            loadTransaction(transaction_in_edit_id);
+        })
     })
 }
 
