@@ -1,11 +1,40 @@
 document.addEventListener("DOMContentLoaded", async () => {
     await loadTransactions();
     await loadCharts();
+    loadTotals(await getTotals());
 })
 
-async function loadCharts() {
+async function getTransactions() {
     const response = await axios.get('/api/transactions/');
     const transactions = response.data;
+    return transactions;
+}
+
+async function getTotals() {
+    const transactions = await getTransactions();
+    let totalExpenses = 0;
+    let totalIncome = 0;
+    transactions.forEach(t => {
+        if(t.type == 'expense') {
+            totalExpenses += parseFloat(t.amount);
+        } else if(t.type == 'income') {
+            totalIncome += parseFloat(t.amount);
+        }
+    })
+    const data = {
+        totalExpenses : totalExpenses,
+        totalIncome : totalIncome
+    };
+    return data;
+}
+
+async function loadTotals(totals) {
+    document.getElementById('total_expenses').textContent = totals.totalExpenses;
+    document.getElementById('total_income').textContent = totals.totalIncome;
+}
+
+async function loadCharts() {
+    const transactions = await getTransactions();
     const categories = [];
     transactions.forEach(t => {
         if(t.type == 'expense') {
@@ -108,8 +137,7 @@ function randomColor() {
 }
 
 async function loadTransactions() {
-    const response = await axios.get('/api/transactions/');
-    let transactions = response.data;
+    let transactions = await getTransactions();
     transactions = transactions.slice(0, 5);
     const table = document.getElementById('transactions_table');
     table.innerHTML = '';
