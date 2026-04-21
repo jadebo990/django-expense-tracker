@@ -18,6 +18,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCategories();
     await loadSubcategories();
 
+    document.getElementById('btnAddTransaction').addEventListener('click', () => {
+        showForm();
+    })
+
+    document.getElementById('btnCancel').addEventListener('click', () => {
+        showTransactionsDiv();
+    })
+
     document.getElementById('formTransactions').addEventListener("submit", (e) => {
         e.preventDefault();
 
@@ -48,6 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             .then(response => {
                 alert("Transaction successfully created.");
                 resetForm();
+                showTransactionsDiv();
                 loadTransactions();
             })
             .catch(error => {
@@ -59,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 .then(response => {
                     alert("Transaction updated successfully.");
                     resetForm();
+                    showTransactionsDiv();
                     loadTransactions();
                 })
                 .catch(error => {
@@ -67,6 +77,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     })
 })
+
+function showForm() {
+    const form = document.getElementById('formTransactions');
+    form.classList.remove('d-none');
+
+    const transactionDiv = document.getElementById('transactionDiv');
+    transactionDiv.classList.remove('d-block');
+    transactionDiv.classList.add('d-none');
+}
+
+function showTransactionsDiv() {
+    const form = document.getElementById('formTransactions');
+    form.classList.remove('d-block');
+    form.classList.add('d-none');
+
+    const transactionDiv = document.getElementById('transactionDiv');
+    transactionDiv.classList.remove('d-none');
+}
 
 async function loadTransaction(transaction_id) {
     const response = await axios.get(`/api/transactions/${transaction_id}/`);
@@ -146,6 +174,7 @@ async function loadTransactions(account_id = null) {
         const btnModify = tr.querySelector(".btnModify");
         btnModify.addEventListener("click", () => {
             transaction_in_edit_id = btnModify.dataset.transactionId;
+            showForm();
             loadTransaction(transaction_in_edit_id);
         })
     })
