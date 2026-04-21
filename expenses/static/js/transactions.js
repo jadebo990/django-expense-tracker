@@ -6,8 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const csrf_token = document.querySelector("input[name='csrfmiddlewaretoken']").value;
     axios.defaults.headers.common["X-CSRFToken"] = csrf_token;
 
+    const params = new URLSearchParams(window.location.search);
+    const account_id = params.get('account');
+    if(account_id) {
+        await loadTransactions(account_id);
+    } else {
+        await loadTransactions();
+    }
 
-    await loadTransactions();
     await loadAccounts();
     await loadCategories();
     await loadSubcategories();
@@ -85,9 +91,15 @@ function resetForm() {
     transaction_in_edit_id = '';
 }
 
-async function loadTransactions() {
-    const response = await axios.get('/api/transactions/');
-    const transactions = response.data;
+async function loadTransactions(account_id = null) {
+    let transactions = '';
+    if(account_id) {
+        const response = await axios.get(`/api/transactions/?account=${account_id}`);
+        transactions = response.data;
+    } else {
+        const response = await axios.get('/api/transactions/');
+        transactions = response.data;
+    }
     const table = document.getElementById('tableTransactions');
     table.innerHTML = '';
     transactions.forEach(t => {

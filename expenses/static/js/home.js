@@ -21,11 +21,11 @@ async function getTotals() {
             totalIncome += parseFloat(t.amount);
         }
     })
-    const data = {
-        totalExpenses : totalExpenses,
-        totalIncome : totalIncome
+    const totals = {
+        totalExpenses : `€ ${totalExpenses}`,
+        totalIncome : `€ ${totalIncome}`
     };
-    return data;
+    return totals;
 }
 
 async function loadTotals(totals) {
@@ -66,7 +66,6 @@ async function loadCharts() {
     const ctxE = document.getElementById('expensesChart');
     const ctxI = document.getElementById('incomeChart');
 
-    //è giusto metterle fuori le const?
     const e_labels = [];
     const i_labels = [];
     const e_data = [];
@@ -101,7 +100,7 @@ async function loadCharts() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Total expenses',
+                    text: 'Expenses',
                 }
             }
         }
@@ -121,7 +120,7 @@ async function loadCharts() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Total income',
+                    text: 'Income',
                 }
             }
         }

@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from .models import Account, Category, Subcategory, Transaction
 from .serializers import AccountSerializer, CategorySerializer, SubcategorySerializer, TransactionSerializer
 from django.views.generic import TemplateView
+from django.views.generic.list import ListView
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
@@ -17,8 +18,15 @@ class SubcategoryViewSet(viewsets.ModelViewSet):
     serializer_class = SubcategorySerializer
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all().order_by("-date")
     serializer_class = TransactionSerializer
+    
+    def get_queryset(self):
+        queryset = Transaction.objects.all().order_by("-date")
+        account_id = self.request.query_params.get('account')
+        if account_id:
+            queryset = queryset.filter(account_id=account_id)
+        return queryset
+    
 
 def home(request):
     return render(request, "home.html")
@@ -26,3 +34,7 @@ def home(request):
 class TransactionTemplateView(TemplateView):
     template_name = 'transactions.html'
     
+class AccountListView(ListView):
+    model = Account
+    template_name = 'accounts.html'
+    context_object_name = 'accounts'

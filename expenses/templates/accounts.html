@@ -1,0 +1,17 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block head_title %}Accounts{% endblock head_title %}
+
+{% block body %}
+    {% include 'includes/header.html' %}
+    <ul>
+        {% for a in accounts %}
+            <li>{{ a.name }} - <a href="{% url 'transactions' %}?account={{ a.id }}">View Transactions</a></li>
+        {% endfor %}
+    </ul>
+{% endblock body %}
+
+{% block extra_javascript %}
+    <script src="{% static 'js/accounts.js' %}"></script>
+{% endblock extra_javascript %}
