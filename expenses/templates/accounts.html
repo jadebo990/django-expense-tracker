@@ -5,11 +5,16 @@
 
 {% block body %}
     {% include 'includes/header.html' %}
-    <ul>
-        {% for a in accounts %}
-            <li>{{ a.name }} - <a href="{% url 'transactions' %}?account={{ a.id }}">View Transactions</a></li>
-        {% endfor %}
-    </ul>
+    <div class="container-md">
+        <h1>Your accounts</h1>
+        <hr>
+        <div id="accountsDiv" class="d-flex gap-5">
+            {% for a in accounts %}
+                <button class="btn btn-light p-3">{{ a.name }}<br><a href="{% url 'transactions' %}?account={{ a.id }}">View Transactions</a></button>
+            {% endfor %}
+        </div>
+        
+    </div>
 {% endblock body %}
 
 {% block extra_javascript %}
