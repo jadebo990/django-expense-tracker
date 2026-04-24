@@ -1,4 +1,37 @@
 body {
-    margin:0;
+    margin: 0;
+    background: linear-gradient(135deg, #fdfcfb 0%, #f0ebe3 100%);
+    min-height: 100vh;
 }
 
+h1, h2, h3 {
+    color: #6b4c35;
+}
+
+.table {
+    --bs-table-bg: #f7f2ec;
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: #6b4c35;
+    --bs-nav-link-color: #6b4c35;
+    --bs-nav-link-hover-color: #b8997a;
+}
+
+.btnBase {
+    --bs-btn-bg: #6b4c35;
+    --bs-btn-border-color: #6b4c35;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-bg: #b8997a;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-border-color: #b8997a;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

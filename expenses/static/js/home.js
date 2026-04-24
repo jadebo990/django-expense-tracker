@@ -28,7 +28,7 @@ async function getTotals() {
     return totals;
 }
 
-async function loadTotals(totals) {
+function loadTotals(totals) {
     document.getElementById('total_expenses').textContent = totals.totalExpenses;
     document.getElementById('total_income').textContent = totals.totalIncome;
 }
@@ -67,24 +67,40 @@ async function loadCharts() {
     const ctxI = document.getElementById('incomeChart');
 
     const e_labels = [];
-    const i_labels = [];
     const e_data = [];
+    let e_backgroundColor = [];
+
+    const i_labels = [];
     const i_data = [];
-    const e_backgroundColor = [];
-    const i_backgroundColor = [];
+    let i_backgroundColor = [];
+
+    const backgroundColors = {
+        "expense" : {
+            "Food" : 'rgb(255, 179, 186)',        // rosa antico
+            "Transport" : 'rgb(255, 223, 186)',    // pesca
+            "Health" : 'rgb(186, 225, 255)',       // azzurro polvere
+            "Entertainment" : 'rgb(220, 198, 255)', // lavanda
+            "Shopping" : 'rgb(198, 255, 221)',     // menta
+        },
+        "income" : {
+            "Salary" : 'rgb(185, 230, 201)',       // verde salvia
+            "Bonus" : 'rgb(255, 236, 179)',        // giallo sabbia
+        }
+    };
 
     categories.forEach(c => {
         if(c.type == 'expense') {
             e_labels.push(c.name);
-            e_data.push(c.total_amount);
-            e_backgroundColor.push(randomColor());    
+            e_data.push(c.total_amount); 
 
         } else if(c.type == 'income') {
             i_labels.push(c.name);
             i_data.push(c.total_amount);
-            i_backgroundColor.push(randomColor());
         }
     })
+
+    e_backgroundColor = e_labels.map(label => backgroundColors.expense[label]);
+    i_backgroundColor = i_labels.map(label => backgroundColors.income[label]);
 
     new Chart(ctxE, {
         type: 'doughnut',
@@ -129,9 +145,9 @@ async function loadCharts() {
 }
 
 function randomColor() {
-    r = Math.floor(Math.random() * 256);
-    g = Math.floor(Math.random() * 256);
-    b = Math.floor(Math.random() * 256);
+    let r = Math.floor(Math.random() * 256);
+    let g = Math.floor(Math.random() * 256);
+    let b = Math.floor(Math.random() * 256);
     return `rgb(${r}, ${g}, ${b})`;
 }
 
@@ -143,20 +159,10 @@ async function loadTransactions() {
     transactions.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${t.id}</td>
             <td>${t.type_display}</td>
             <td>${t.date}</td>
-            <td>${t.account.name}</td>
             <td>${t.category.name}</td>
-            <td>${t.subcategory ? t.subcategory.name : "-"}</td>
             <td>€ ${t.amount}</td>
-            <td>${t.description ? t.description : "-"}</td>
-            <td>${t.frequency_display ? t.frequency_display : "-"}</td>
-            <td>${t.label ? t.label : "-"}</td>
-            <td colspan="2">
-                <button class="btn btn-info btnModify" data-id=${t.id}>MODIFY</button>
-                <button class="btn btn-danger btnDelete" data-id=${t.id}>DELETE</button>
-            </td>
         `;
         table.append(tr);
     });

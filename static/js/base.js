@@ -6,11 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
             e.classList.add('active');
         }
     })
+
+    const logo = document.getElementById('logo');
+
+    logo.addEventListener('mouseover', () => {
+        logo.style.animation = 'rotate 2s infinite linear';
+    })
+
+    logo.addEventListener('mouseout', () => {
+        setTimeout(() => {
+            logo.style.animation = "";
+        }, 500);
+    })
+    
 })
 
 
-/*logica spin logo: da fare
-const logo = document.getElementById('logo');
-logo.addEventListener('mouseover', () => {
-    spinLogo();
-})*/

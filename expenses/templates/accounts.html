@@ -10,7 +10,7 @@
         <hr>
         <div id="accountsDiv" class="d-flex gap-5">
             {% for a in accounts %}
-                <button class="btn btn-light p-3">{{ a.name }}<br><a href="{% url 'transactions' %}?account={{ a.id }}">View Transactions</a></button>
+                <button class="btn btn-light p-3">{{ a.name }}<br><a class="btn btnBase" href="{% url 'transactions' %}?account={{ a.id }}">View Transactions</a></button>
             {% endfor %}
         </div>
         
