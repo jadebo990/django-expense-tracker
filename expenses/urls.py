@@ -12,5 +12,4 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('api/', include(router.urls)),
     path('transactions/', views.TransactionTemplateView.as_view(), name='transactions'),
-    path('accounts/', views.AccountListView.as_view(), name='accounts'),
 ]

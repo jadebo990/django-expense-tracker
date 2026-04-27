@@ -27,6 +27,10 @@ h1, h2, h3 {
     --bs-btn-hover-border-color: #b8997a;
 }
 
+.a {
+    color:#6b4c35;
+}
+
 @keyframes rotate {
     from {
         transform: rotate(0deg);

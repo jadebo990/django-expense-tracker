@@ -9,6 +9,19 @@ class Account(models.Model):
         LOAN = "loan", "Loan"
         BONUS = "bonus", "Bonus"
 
+    @property
+    def balance(self):
+        transactions = self.account_transactions.all()
+        total_expenses = 0
+        total_income = 0
+        for t in transactions:
+            if t.type == 'expense':
+                total_expenses += t.amount
+            elif t.type == 'income':
+                total_income += t.amount
+        balance = total_income - total_expenses
+        return balance
+
     name = models.CharField(max_length=50)
     type = models.CharField(choices=AccountType)
 
@@ -57,7 +70,7 @@ class Transaction(models.Model):
 
     type = models.CharField(choices=TransactionType)
     date = models.DateField()
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='account_transactions')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(
         Subcategory, 

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadTransactions();
     await loadCharts();
     loadTotals(await getTotals());
+    await loadAccounts();
 })
 
 async function getTransactions() {
@@ -144,13 +145,6 @@ async function loadCharts() {
     
 }
 
-function randomColor() {
-    let r = Math.floor(Math.random() * 256);
-    let g = Math.floor(Math.random() * 256);
-    let b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
-}
-
 async function loadTransactions() {
     let transactions = await getTransactions();
     transactions = transactions.slice(0, 5);
@@ -169,3 +163,26 @@ async function loadTransactions() {
 }
 
 
+async function loadAccounts() {
+    const response = await axios.get('/api/accounts/');
+    const accounts = response.data;
+    const accountsDiv = document.getElementById('accountsDiv');
+    accountsDiv.innerHTML = '';
+    accounts.forEach(a => {
+        accountsDiv.innerHTML += `
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">${a.name}</h5>
+                        <div class="card-text d-flex flex-column">
+                            <div>
+                                Balance: <span class="badge ${a.balance >= 0 ? 'text-bg-success' : 'text-bg-danger'}">${a.balance}</span>
+                            </div>
+                            <a href="/transactions/?account=${a.id}">View transactions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    })
+}

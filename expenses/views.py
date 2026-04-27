@@ -34,7 +34,3 @@ def home(request):
 class TransactionTemplateView(TemplateView):
     template_name = 'transactions.html'
     
-class AccountListView(ListView):
-    model = Account
-    template_name = 'accounts.html'
-    context_object_name = 'accounts'
