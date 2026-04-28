@@ -7,12 +7,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block head_title %}{% endblock head_title %}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Noto+Sans+Ol+Chiki:wght@400..700&display=swap" rel="stylesheet">
         <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
         {% bootstrap_css %}
         <link rel="stylesheet" href="{% static 'css/base.css' %}">
         {% block extra_css %}{% endblock extra_css %}
     </head>
-    <body>
+    <body class="bricolage-grotesque-all">
         {% block body %}{% endblock body %}
         {% bootstrap_javascript %}
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

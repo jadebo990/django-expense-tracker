@@ -27,8 +27,17 @@ h1, h2, h3 {
     --bs-btn-hover-border-color: #b8997a;
 }
 
-.a {
+a {
     color:#6b4c35;
+}
+
+.bricolage-grotesque-all {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
 }
 
 @keyframes rotate {

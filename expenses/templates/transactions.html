@@ -4,94 +4,108 @@
 {% block head_title %}Transactions{% endblock head_title %}
 {% block body %}
     {% include 'includes/header.html' %}
-    <div class="container-md">
-        <form id="formTransactions" class="d-none">
-            {% csrf_token %}
-            <div class="mb-2">
-                <label for="selectType">Type</label>
-                <select class="form-control" id="selectType" name="selectType" required>
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
-                    <option value="transfer">Transfer</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <label for="date">Date</label>
-                <input type="date" class="form-control" id="date" name="date" required>
-            </div>
-            <div class="mb-2">
-                <label for="selectAccount">Account</label>
-                <select class="form-control" id="selectAccount" name="selectAccount" required>
-                    <option>Loading...</option>
-                </select>
-            </div> 
-            <div class="mb-2">
-                <label for="selectCategory">Category</label>
-                <select class="form-control" id="selectCategory" name="selectCategory" required>
-                    <option>Loading...</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <label for="selectSubcategory">Subcategory</label>
-                <select class="form-control" id="selectSubcategory" name="selectSubcategory">
-                    <option>Loading...</option>
-                </select>
-            </div>           
-            <div class="mb-2">
-                <label for="amount">Amount</label>
-                <input type="number" class="form-control" id="amount" name="amount" required>
-            </div>
-            <div class="mb-2">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-            </div>
-            <div class="mb-2">
-                <label for="selectFrequency">Frequency</label>
-                <select class="form-control" id="selectFrequency" name="selectFrequency">
-                    <option value="one_time">One Time</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <label for="label">Label</label>
-                <input type="text" class="form-control" id="label" name="label">
-            </div>
-            <button type="submit" id="btnSubmit" class="btn btnBase">CONFIRM</button>
-            <button type="button" id="btnCancel" class="btn btn-secondary">CANCEL</button>
-        </form>
+    <div class="container-md d-flex flex-column">
+        <div class="d-flex justify-content-center">
+            <form id="formTransactions" class="d-flex flex-column gap-3 d-none w-50">
+                {% csrf_token %}
+                <div>
+                    <label for="selectType">Type</label>
+                    <select class="form-control" id="selectType" name="selectType" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                        <option value="transfer">Transfer</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-5">   
+                    <div class="flex-fill">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
 
-        <div id="transactionDiv">
-            <div class="d-flex justify-content-between">
-                <h1>Transaction list</h1>
-                <button id="btnAddTransaction" class="btn btn-success">Add New</button>
+                    <div class="flex-fill">
+                        <label for="selectAccount">Account</label>
+                        <select class="form-control" id="selectAccount" name="selectAccount" required>
+                            <option>Loading...</option>
+                        </select>
+                    </div>
+                </div> 
+                <div class="d-flex gap-5">
+                    <div class="flex-fill">
+                        <label for="selectCategory">Category</label>
+                        <select class="form-control" id="selectCategory" name="selectCategory" required>
+                            <option>Loading...</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-fill">
+                        <label for="selectSubcategory">Subcategory</label>
+                        <select class="form-control" id="selectSubcategory" name="selectSubcategory">
+                            <option>Loading...</option>
+                        </select>
+                    </div>
+                </div>           
+                <div>
+                    <label for="amount">Amount</label>
+                    <input type="number" class="form-control" id="amount" name="amount" required>
+                    
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="d-flex gap-5">
+                    <div class="flex-fill">
+                        <label for="selectFrequency">Frequency</label>
+                        <select class="form-control" id="selectFrequency" name="selectFrequency">
+                            <option value="one_time">One Time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-fill">
+                        <label for="label">Label</label>
+                        <input type="text" class="form-control" id="label" name="label">
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" id="btnSubmit" class="btn btnBase">CONFIRM</button>
+                    <button type="button" id="btnCancel" class="btn btn-secondary">CANCEL</button>
+                </div>
+            </form>
+
+            <div id="transactionDiv">
+                <div class="d-flex justify-content-between">
+                    <h1>Transaction list</h1>
+                    <button id="btnAddTransaction" class="btn btn-success">Add New</button>
+                </div>
+                <hr>
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Account</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Frequency</th>
+                            <th>Label</th>
+                            <th colspan="2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableTransactions">
+                        <tr>
+                            <td colspan="11">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <hr>
-            <table class="table text-center">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Type</th>
-                        <th>Date</th>
-                        <th>Account</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
-                        <th>Amount</th>
-                        <th>Description</th>
-                        <th>Frequency</th>
-                        <th>Label</th>
-                        <th colspan="2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tableTransactions">
-                    <tr>
-                        <td colspan="11">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
+        {% include 'includes/footer.html' %}
     </div>
 {% endblock body %}
 

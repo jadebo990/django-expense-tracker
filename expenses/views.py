@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from .models import Account, Category, Subcategory, Transaction
 from .serializers import AccountSerializer, CategorySerializer, SubcategorySerializer, TransactionSerializer
 from django.views.generic import TemplateView
-from django.views.generic.list import ListView
+from rest_framework.permissions import AllowAny
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
@@ -19,6 +19,7 @@ class SubcategoryViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         queryset = Transaction.objects.all().order_by("-date")

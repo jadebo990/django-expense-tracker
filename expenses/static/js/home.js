@@ -155,6 +155,7 @@ async function loadTransactions() {
         tr.innerHTML = `
             <td>${t.type_display}</td>
             <td>${t.date}</td>
+            <td>${t.account.name}</td>
             <td>${t.category.name}</td>
             <td>€ ${t.amount}</td>
         `;

@@ -7,18 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    const logo = document.getElementById('logo');
+    const logo = document.querySelectorAll('.logo');
 
-    logo.addEventListener('mouseover', () => {
-        logo.style.animation = 'rotate 2s infinite linear';
-    })
+    logo.forEach(logo => {
+        logo.addEventListener('mouseover', () => {
+            logo.style.animation = 'rotate 2s infinite linear';
+        })
 
-    logo.addEventListener('mouseout', () => {
-        setTimeout(() => {
-            logo.style.animation = "";
-        }, 500);
-    })
-    
+        logo.addEventListener('mouseout', () => {
+            setTimeout(() => {
+                logo.style.animation = "";
+            }, 500);
+        })
+    })    
 })
 
 
