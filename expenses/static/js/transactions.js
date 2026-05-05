@@ -6,17 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const csrf_token = document.querySelector("input[name='csrfmiddlewaretoken']").value;
     axios.defaults.headers.common["X-CSRFToken"] = csrf_token;
 
-    const params = new URLSearchParams(window.location.search);
-    const account_id = params.get('account');
-    if(account_id) {
-        await loadTransactions(account_id);
-    } else {
-        await loadTransactions();
-    }
-
     await loadAccounts();
     await loadCategories();
     await loadSubcategories();
+    await loadTransactions();
 
     document.getElementById('btnAddTransaction').addEventListener('click', () => {
         showForm();
@@ -29,15 +22,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('formTransactions').addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const type = document.getElementById('selectType').value;
-        const date = document.getElementById('date').value;
-        const account = document.getElementById('selectAccount').value;
-        const category = document.getElementById('selectCategory').value;
-        const subcategory = document.getElementById('selectSubcategory').value ? document.getElementById('selectSubcategory').value : null;
-        const amount = document.getElementById('amount').value;
+        const type = document.getElementById('selectFormType').value;
+        const date = document.getElementById('formDate').value;
+        const account = document.getElementById('selectFormAccount').value;
+        const category = document.getElementById('selectFormCategory').value;
+        const subcategory = document.getElementById('selectFormSubcategory').value ? document.getElementById('selectFormSubcategory').value : null;
+        const amount = document.getElementById('formAmount').value;
         const description = document.getElementById('description').value ? document.getElementById('description').value : null;
-        const frequency = document.getElementById('selectFrequency').value;
-        const label = document.getElementById('label').value ? document.getElementById('label').value : null;
+        const frequency = document.getElementById('selectFormFrequency').value;
+        const label = document.getElementById('formLabel').value ? document.getElementById('formLabel').value : null;
 
         const transaction = {
             "type" : type,
@@ -76,7 +69,52 @@ document.addEventListener("DOMContentLoaded", async () => {
                 })
         }
     })
+
+    document.getElementById('filtersForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // prendo i valori dal filtersForm
+        const type = document.getElementById('selectFiltersType').value;
+        const date = document.getElementById('filtersDate').value;
+        const account = document.getElementById('selectFiltersAccount').value;
+        const category = document.getElementById('selectFiltersCategory').value;
+        const subcategory = document.getElementById('selectFiltersSubcategory').value;
+        const amount = document.getElementById('filtersAmount').value;
+        const frequency = document.getElementById('selectFiltersFrequency').value;
+        const label = document.getElementById('filtersLabel').value;
+
+        // creo l'oggetto coi parametri dei filtri
+        const params = {
+            "type" : type,
+            "date" : date,
+            "account" : account,
+            "category" : category,
+            "subcategory" : subcategory,
+            "amount" : amount,
+            "frequency" : frequency,
+            "label" : label
+        }
+
+        // elimino le keys con value vuoti (cioè non inseriti nel filtersForm)
+        for(const [key, value] of Object.entries(params)) {
+            if(!value) {
+                delete params[key];
+            }
+        }
+    
+        // costruisco l'url con i parametri del filtro scelti
+        let filterParams = new URLSearchParams(params);
+        filterParams = filterParams.toString() 
+        loadTransactions(filterParams)
+    })
+
+    document.getElementById('btnFiltersFormReset').addEventListener('click', () => {
+        const filtersForm = document.getElementById('filtersForm');
+        filtersForm.reset();
+        loadTransactions();
+    })
 })
+
 
 function showForm() {
     const form = document.getElementById('formTransactions');
@@ -99,15 +137,15 @@ function showTransactionsDiv() {
 async function loadTransaction(transaction_id) {
     const response = await axios.get(`/api/transactions/${transaction_id}/`);
     const transaction = response.data;
-    document.getElementById('selectType').value = transaction.type;
-    document.getElementById('date').value = transaction.date;
-    document.getElementById('selectAccount').value = transaction.account.id;
-    document.getElementById('selectCategory').value = transaction.category.id;
-    document.getElementById('selectSubcategory').value = transaction.subcategory ? transaction.subcategory.id : "";
-    document.getElementById('amount').value = transaction.amount;
+    document.getElementById('selectFormType').value = transaction.type;
+    document.getElementById('formDate').value = transaction.date;
+    document.getElementById('selectFormAccount').value = transaction.account.id;
+    document.getElementById('selectFormCategory').value = transaction.category.id;
+    document.getElementById('selectFormSubcategory').value = transaction.subcategory ? transaction.subcategory.id : "";
+    document.getElementById('formAmount').value = transaction.amount;
     document.getElementById('description').value = transaction.description;
-    document.getElementById('selectFrequency').value = transaction.frequency;
-    document.getElementById('label').value = transaction.label;
+    document.getElementById('selectFormFrequency').value = transaction.frequency;
+    document.getElementById('formLabel').value = transaction.label;
 
     currentOperation = 'modify';
 }
@@ -119,15 +157,17 @@ function resetForm() {
     transaction_in_edit_id = '';
 }
 
-async function loadTransactions(account_id = null) {
+async function loadTransactions(filterParams = null) {
     let transactions = '';
-    if(account_id) {
-        const response = await axios.get(`/api/transactions/?account=${account_id}`);
+
+    if(filterParams) {
+        const response = await axios.get(`/api/transactions/?${filterParams}`);
         transactions = response.data;
-    } else {
-        const response = await axios.get('/api/transactions/');
+    }else{
+        const response = await axios.get(`/api/transactions/`);
         transactions = response.data;
     }
+
     const table = document.getElementById('tableTransactions');
     table.innerHTML = '';
     transactions.forEach(t => {
@@ -184,14 +224,29 @@ async function loadAccounts() {
     try {
         const response = await axios.get('/api/accounts/');
         const accounts = response.data;
-        const select = document.getElementById('selectAccount');
-        select.innerHTML = '';
         
+        // form
+        const selectForm = document.getElementById('selectFormAccount');
+        selectForm.innerHTML = `
+            <option value=""></option>
+        `;
         accounts.forEach(a => {
             const option = document.createElement('option');
             option.value = a.id;
             option.textContent = a.name;
-            select.append(option);
+            selectForm.append(option);
+        });
+
+        // filters
+        const selectFilters = document.getElementById('selectFiltersAccount');
+        selectFilters.innerHTML = `
+            <option value=""></option>
+        `;
+        accounts.forEach(a => {
+            const option = document.createElement('option');
+            option.value = a.id;
+            option.textContent = a.name;
+            selectFilters.append(option);
         });
     } catch(error) {
         console.error(error);
@@ -202,13 +257,29 @@ async function loadCategories() {
     try {
         const response = await axios.get('/api/categories/');
         const categories = response.data;
-        const select = document.getElementById('selectCategory');
-        select.innerHTML = '';
+
+        // form
+        const selectForm = document.getElementById('selectFormCategory');
+        selectForm.innerHTML = `
+            <option value=""></option>
+        `;
         categories.forEach(c => {
             const option = document.createElement('option');
             option.value = c.id;
             option.textContent = c.name;
-            select.append(option);
+            selectForm.append(option);
+        })
+
+        // filter
+        const selectFilters = document.getElementById('selectFiltersCategory');
+        selectFilters.innerHTML = `
+            <option value=""></option>
+        `;
+        categories.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = c.name;
+            selectFilters.append(option);
         })
     } catch(error) {
         console.error(error);
@@ -219,15 +290,29 @@ async function loadSubcategories(){
     try {
         const response = await axios.get('/api/subcategories/');
         const subcategories = response.data;
-        const select = document.getElementById('selectSubcategory');
-        select.innerHTML = `
+
+        // form
+        const selectForm = document.getElementById('selectFormSubcategory');
+        selectForm.innerHTML = `
             <option value=""></option>
         `;
         subcategories.forEach(s => {
             const option = document.createElement('option');
             option.value = s.id;
             option.textContent = s.name;
-            select.append(option);
+            selectForm.append(option);
+        })
+
+        // filters
+        const selectFilters = document.getElementById('selectFiltersSubcategory');
+        selectFilters.innerHTML = `
+            <option value=""></option>
+        `;
+        subcategories.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.name;
+            selectFilters.append(option);
         })
     } catch(error) {
         console.error(error);

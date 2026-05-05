@@ -9,8 +9,8 @@
             <form id="formTransactions" class="d-flex flex-column gap-3 d-none w-50">
                 {% csrf_token %}
                 <div>
-                    <label for="selectType">Type</label>
-                    <select class="form-control" id="selectType" name="selectType" required>
+                    <label for="selectFormType">Type</label>
+                    <select class="form-control" id="selectFormType" name="selectFormType" required>
                         <option value="expense">Expense</option>
                         <option value="income">Income</option>
                         <option value="transfer">Transfer</option>
@@ -18,43 +18,43 @@
                 </div>
                 <div class="d-flex gap-5">   
                     <div class="flex-fill">
-                        <label for="date">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" required>
+                        <label for="formDate">Date</label>
+                        <input type="date" class="form-control" id="formDate" name="formDate" required>
                     </div>
 
                     <div class="flex-fill">
-                        <label for="selectAccount">Account</label>
-                        <select class="form-control" id="selectAccount" name="selectAccount" required>
+                        <label for="selectFormAccount">Account</label>
+                        <select class="form-control" id="selectFormAccount" name="selectFormAccount" required>
                             <option>Loading...</option>
                         </select>
                     </div>
                 </div> 
                 <div class="d-flex gap-5">
                     <div class="flex-fill">
-                        <label for="selectCategory">Category</label>
-                        <select class="form-control" id="selectCategory" name="selectCategory" required>
+                        <label for="selectFormCategory">Category</label>
+                        <select class="form-control" id="selectFormCategory" name="selectFormCategory" required>
                             <option>Loading...</option>
                         </select>
                     </div>
 
                     <div class="flex-fill">
-                        <label for="selectSubcategory">Subcategory</label>
-                        <select class="form-control" id="selectSubcategory" name="selectSubcategory">
+                        <label for="selectFormSubcategory">Subcategory</label>
+                        <select class="form-control" id="selectFormSubcategory" name="selectFormSubcategory">
                             <option>Loading...</option>
                         </select>
                     </div>
                 </div>           
                 <div>
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="amount" name="amount" required>
+                    <label for="formAmount">Amount</label>
+                    <input type="number" class="form-control" id="formAmount" name="formAmount" required>
                     
                     <label for="description">Description</label>
                     <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                 </div>
                 <div class="d-flex gap-5">
                     <div class="flex-fill">
-                        <label for="selectFrequency">Frequency</label>
-                        <select class="form-control" id="selectFrequency" name="selectFrequency">
+                        <label for="selectFormFrequency">Frequency</label>
+                        <select class="form-control" id="selectFormFrequency" name="selectFormFrequency">
                             <option value="one_time">One Time</option>
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
@@ -64,8 +64,8 @@
                     </div>
 
                     <div class="flex-fill">
-                        <label for="label">Label</label>
-                        <input type="text" class="form-control" id="label" name="label">
+                        <label for="formLabel">Label</label>
+                        <input type="text" class="form-control" id="formLabel" name="formLabel">
                     </div>
                 </div>
 
@@ -79,6 +79,72 @@
                 <div class="d-flex justify-content-between">
                     <h1>Transaction list</h1>
                     <button id="btnAddTransaction" class="btn btn-success">Add New</button>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <h3>Filters:</h3>
+                    <form id="filtersForm" class="d-flex gap-3">
+                        <div>
+                            <label for="selectFiltersType">Type</label>
+                            <select class="form-control" id="selectFiltersType" name="selectFiltersType">
+                                    <option value=""></option>
+                                    <option value="expense">Expense</option>
+                                    <option value="income">Income</option>
+                                    <option value="transfer">Transfer</option>
+                            </select>
+                        </div>
+
+                        <div><!-- da gestire il periodo -->
+                            <label for="filtersDate">Date</label>
+                            <input type="date" class="form-control" id="filtersDate" name="filtersDate">
+                        </div>
+
+                        <div>
+                            <label for="selectFiltersAccount">Account</label>
+                            <select class="form-control" id="selectFiltersAccount" name="selectFiltersAccount">
+                                <option>Loading ..</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="selectFiltersCategory">Category</label>
+                            <select class="form-control" id="selectFiltersCategory" name="selectFiltersCategory">
+                                <option>Loading ..</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="selectFiltersSubcategory">Subcategory</label>
+                            <select class="form-control" id="selectFiltersSubcategory" name="selectFiltersSubcategory">
+                                <option>Loading ..</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtersAmount">Amount</label>
+                            <input type="number" class="form-control" id="filtersAmount" name="filtersAmount" min="0.00">
+                        </div>
+
+                        <div>
+                            <label for="selectFiltersFrequency">Frequency</label>
+                            <select class="form-control" id="selectFiltersFrequency" name="selectFiltersFrequency">
+                                <option value=""></option>
+                                <option value="one_time">One Time</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="filtersLabel">Label</label>
+                            <input type="text" class="form-control" id="filtersLabel" name="filtersLabel">
+                        </div>
+                        <div>
+                            <button type="submit" id="btnFilterSearch" class="btn btn-primary">Search</button>
+                            <button type="button" id="btnFiltersFormReset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
                 </div>
                 <hr>
                 <table class="table text-center">

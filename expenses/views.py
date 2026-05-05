@@ -23,9 +23,30 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = Transaction.objects.all().order_by("-date")
-        account_id = self.request.query_params.get('account')
-        if account_id:
-            queryset = queryset.filter(account_id=account_id)
+        fields = ['type', 'date', 'account', 'category', 'subcategory', 'amount', 'frequency', 'label']
+        params = {}
+        for key in fields:
+            value = self.request.query_params.get(key)
+            if value:
+                params[key] = value
+
+        if 'type' in params:
+            queryset = queryset.filter(type=params['type'])
+        if 'date' in params:
+            queryset = queryset.filter(date=params['date'])
+        if 'account' in params:
+            queryset = queryset.filter(account_id=params['account'])
+        if 'category' in params:
+            queryset = queryset.filter(category_id=params['category'])
+        if 'subcategory' in params:
+            queryset = queryset.filter(subcategory_id=params['subcategory'])
+        if 'amount' in params:
+            queryset = queryset.filter(amount=params['amount'])
+        if 'frequency' in params:
+            queryset = queryset.filter(frequency=params['frequency'])
+        if 'label' in params:
+            queryset = queryset.filter(label=params['label'])
+            
         return queryset
     
 
