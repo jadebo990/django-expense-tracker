@@ -6,10 +6,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const csrf_token = document.querySelector("input[name='csrfmiddlewaretoken']").value;
     axios.defaults.headers.common["X-CSRFToken"] = csrf_token;
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const account = urlParams.get('account');
+    if(account) {
+        const filterParams = urlParams.toString();
+        await loadTransactions(filterParams);
+    } else {
+        await loadTransactions();
+    }
+
     await loadAccounts();
     await loadCategories();
     await loadSubcategories();
-    await loadTransactions();
+    
 
     document.getElementById('btnAddTransaction').addEventListener('click', () => {
         showForm();
@@ -101,10 +110,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 delete params[key];
             }
         }
-    
+        
         // costruisco l'url con i parametri del filtro scelti
         let filterParams = new URLSearchParams(params);
-        filterParams = filterParams.toString() 
+        filterParams = filterParams.toString()
+        console.log(filterParams)
         loadTransactions(filterParams)
     })
 
