@@ -1,8 +1,24 @@
 {% load static %}
-<header class="d-flex justify-content-center align-items-center gap-3 m-2">
-	<a href="{% url 'home' %}"><img class="logo" src="{% static 'images/logo.png' %}" alt="Logo" width="60" height="60"></a>
-  	<ul class="nav nav-pills">
-    	<li class="nav-item"><a href="{% url 'home' %}" class="nav-link" aria-current="page">Home</a></li>
-    	<li class="nav-item"><a href="{% url 'transactions' %}" class="nav-link">Transactions</a></li>
-  	</ul>
+<header class="navbar navbar-expand navbar-light bg-white shadow-sm mb-4 px-4 py-2">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" width="45" height="45" class="logo d-inline-block align-text-top">
+            <span class="fw-bold fs-4 tracking-tight text-primary">Track your money</span>
+        </a>
+
+        <ul class="nav nav-pills ms-auto">
+            <li class="nav-item">
+                <a href="{% url 'home' %}" 
+                   class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %} fw-semibold">
+                   Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'transactions' %}" 
+                   class="nav-link {% if request.resolver_match.url_name == 'transactions' %}active{% endif %} fw-semibold">
+                   Transactions
+                </a>
+            </li>
+        </ul>
+    </div>
 </header>

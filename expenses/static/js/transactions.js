@@ -2,7 +2,6 @@ let currentOperation = 'create';
 let transaction_in_edit_id = '';
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // gestione token csrf
     const csrf_token = document.querySelector("input[name='csrfmiddlewaretoken']").value;
     axios.defaults.headers.common["X-CSRFToken"] = csrf_token;
 
@@ -82,7 +81,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('filtersForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // prendo i valori dal filtersForm
         const type = document.getElementById('selectFiltersType').value;
         const date = document.getElementById('filtersDate').value;
         const account = document.getElementById('selectFiltersAccount').value;
@@ -92,7 +90,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const frequency = document.getElementById('selectFiltersFrequency').value;
         const label = document.getElementById('filtersLabel').value;
 
-        // creo l'oggetto coi parametri dei filtri
         const params = {
             "type" : type,
             "date" : date,
@@ -104,17 +101,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             "label" : label
         }
 
-        // elimino le keys con value vuoti (cioè non inseriti nel filtersForm)
         for(const [key, value] of Object.entries(params)) {
             if(!value) {
                 delete params[key];
             }
         }
-        
-        // costruisco l'url con i parametri del filtro scelti
+
         let filterParams = new URLSearchParams(params);
         filterParams = filterParams.toString()
-        console.log(filterParams)
+    
         loadTransactions(filterParams)
     })
 
@@ -167,67 +162,87 @@ function resetForm() {
     transaction_in_edit_id = '';
 }
 
-async function loadTransactions(filterParams = null) {
-    let transactions = '';
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('it-IT', { 
+        style: 'currency', 
+        currency: 'EUR' 
+    }).format(value);
+};
 
-    if(filterParams) {
-        const response = await axios.get(`/api/transactions/?${filterParams}`);
+async function loadTransactions(filterParams = null) {
+    let transactions = [];
+
+    try {
+        const url = filterParams ? `/api/transactions/?${filterParams}` : `/api/transactions/`;
+        const response = await axios.get(url);
         transactions = response.data;
-    }else{
-        const response = await axios.get(`/api/transactions/`);
-        transactions = response.data;
+    } catch (error) {
+        console.error("Error loading transactions:", error);
     }
 
     const table = document.getElementById('tableTransactions');
     table.innerHTML = '';
+
     transactions.forEach(t => {
         const tr = document.createElement('tr');
+        
+        const type = t.type_display.toLowerCase();
+        let badgeClass = 'text-bg-secondary';
+        if (type === 'expense') badgeClass = 'text-bg-danger';
+        else if (type === 'income') badgeClass = 'text-bg-success';
+        else if (type === 'transfer') badgeClass = 'text-bg-primary';
+
         tr.innerHTML = `
-            <td>${t.id}</td>
-            <td>${t.type_display}</td>
-            <td>${t.date}</td>
-            <td>${t.account.name}</td>
-            <td>${t.category.name}</td>
-            <td>${t.subcategory ? t.subcategory.name : "-"}</td>
-            <td>€ ${t.amount}</td>
-            <td>${t.description ? t.description : "-"}</td>
-            <td>${t.frequency_display}</td>
-            <td>${t.label ? t.label : "-"}</td>
-            <td>
-                <button class="btn btn-info btnModify" data-transaction-id=${t.id}>MODIFY</button>
+            <td class="align-middle">${t.id}</td>
+            <td class="align-middle">
+                <div class="d-flex justify-content-center">
+                    <span class="badge ${badgeClass}">${t.type_display}</span>
+                </div>
             </td>
-            <td>
-                <button class="btn btn-danger btnDelete" data-transaction-id=${t.id}>DELETE</button>
+            <td class="align-middle">${t.date}</td>
+            <td class="align-middle">${t.account.name}</td>
+            <td class="align-middle">${t.category.name}</td>
+            <td class="align-middle">${t.subcategory ? t.subcategory.name : "-"}</td>
+            <td class="align-middle fw-bold text-nowrap">${formatCurrency(t.amount)}</td>
+            <td class="align-middle text-muted small text-truncate" style="max-width: 150px;">
+                ${t.description ? t.description : "-"}
+            </td>
+            <td class="align-middle">${t.frequency_display}</td>
+            <td class="align-middle">
+                <span class="badge border text-dark fw-normal">${t.label ? t.label : "-"}</span>
+            </td>
+            <td class="align-middle">
+                <button class="btn btn-sm btn-outline-info btnModify" data-transaction-id=${t.id}>
+                    <i class="bi bi-pencil"></i> MODIFY
+                </button>
+            </td>
+            <td class="align-middle">
+                <button class="btn btn-sm btn-outline-danger btnDelete" data-transaction-id=${t.id}>
+                    <i class="bi bi-trash"></i> DELETE
+                </button>
             </td>
         `;
         table.append(tr);
 
         const btnDelete = tr.querySelector(".btnDelete");
         btnDelete.addEventListener("click", () => {
-            if(!confirm('Confirm you want to delete this transaction?')) {
-                alert("Operation aborted.")
-                return;
-            }
+            if(!confirm('Confirm you want to delete this transaction?')) return;
 
-            const transaction_id = btnDelete.dataset.transactionId;
-            axios.delete(`/api/transactions/${transaction_id}/`)
-                .then(response => {
+            axios.delete(`/api/transactions/${t.id}/`)
+                .then(() => {
                     alert('Transaction deleted successfully.');
                     loadTransactions();
                 })
-                .catch(error => {
-                    alert("Transaction deletion denied.")
-                    console.log(error);
-                })
-        })
+                .catch(err => alert("Deletion denied."));
+        });
 
         const btnModify = tr.querySelector(".btnModify");
         btnModify.addEventListener("click", () => {
-            transaction_in_edit_id = btnModify.dataset.transactionId;
-            showForm();
-            loadTransaction(transaction_in_edit_id);
-        })
-    })
+            transaction_in_edit_id = t.id;
+            showForm(); 
+            loadTransaction(t.id); 
+        });
+    });
 }
 
 async function loadAccounts() {
@@ -235,7 +250,6 @@ async function loadAccounts() {
         const response = await axios.get('/api/accounts/');
         const accounts = response.data;
         
-        // form
         const selectForm = document.getElementById('selectFormAccount');
         selectForm.innerHTML = `
             <option value=""></option>
@@ -247,7 +261,6 @@ async function loadAccounts() {
             selectForm.append(option);
         });
 
-        // filters
         const selectFilters = document.getElementById('selectFiltersAccount');
         selectFilters.innerHTML = `
             <option value=""></option>
@@ -268,7 +281,6 @@ async function loadCategories() {
         const response = await axios.get('/api/categories/');
         const categories = response.data;
 
-        // form
         const selectForm = document.getElementById('selectFormCategory');
         selectForm.innerHTML = `
             <option value=""></option>
@@ -280,7 +292,6 @@ async function loadCategories() {
             selectForm.append(option);
         })
 
-        // filter
         const selectFilters = document.getElementById('selectFiltersCategory');
         selectFilters.innerHTML = `
             <option value=""></option>
@@ -301,7 +312,6 @@ async function loadSubcategories(){
         const response = await axios.get('/api/subcategories/');
         const subcategories = response.data;
 
-        // form
         const selectForm = document.getElementById('selectFormSubcategory');
         selectForm.innerHTML = `
             <option value=""></option>
@@ -313,7 +323,6 @@ async function loadSubcategories(){
             selectForm.append(option);
         })
 
-        // filters
         const selectFilters = document.getElementById('selectFiltersSubcategory');
         selectFilters.innerHTML = `
             <option value=""></option>
